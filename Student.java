@@ -1,91 +1,98 @@
-package Problem1;
+package Problem4;
 
+import java.util.HashMap;
 import java.util.Scanner;
 
-public class Student {
-    //Declaring student class fields
-    private int rollNo;
-    private String name;
-    private int age;
-    private String course;
+public class Student
+{
+    //Declaring a field map, where key - String type & Value - Integer type
+   private HashMap<String,Integer> map;
+   public Student() // Initializing map with empty constructor
+   {
+       this.map=new HashMap<>();
+   }
 
-    // Initializing Student class fields with parameterized constructor
-    public Student(int rollNo, String name, int age, String course)
+
+    public static void main(String[] args)
     {
-        this.rollNo = rollNo;
-        this.name = name;
-        this.age = age;
-        this.course = course;
-    }
-    // adding 'throws Exception' to the main method as it throws exceptions at line  39 & 55
-     public static void main(String[] args) throws Exception
-    {
-        Scanner reader = new Scanner(System.in); //creating object for Scanner class
-        System.out.println("Enter student roll number :");
-        int roll_num = Integer.parseInt(reader.nextLine()); //storing entered roll number to var roll_num
+        Scanner reader = new Scanner(System.in);
+        Student obj = new Student(); //creating object for Student class
 
-        System.out.println("Enter student name");
-        String name = reader.nextLine(); //storing entered name to var name
-
-        boolean flag = true; // using flag to create an object only if user entered variables are valid
-
-        flag = generateNameException(name);
-
-        System.out.println("Enter student age");
-        int age = Integer.parseInt(reader.nextLine()); // stores entered age to var age
-
-        flag= generateAgeException(age);
-
-        System.out.println("Enter student course");
-        String course = reader.nextLine(); // stores entered age to var course
-
-        if(flag) // creates object for a student only if entered details are valid
+        boolean flag = true; // Setting flag = true --> To keep running the interactive menu until user enter option = 0
+        while (flag)
         {
-            Student obj = new Student(roll_num,name,age,course);
-            System.out.println("***** Created a object for the student successfully ******");
-        }
-        else // displays below message if entered details are not valid
-            System.out.println("********** Unable to create object as you entered invalid age or name ********");
-    }
-
-    private static boolean generateAgeException(int age)
-    {
-        try // using try as it throws exception at line 55
-        {
-            if (!(age >= 18 && age <= 21)) // if entered age is not within range,throws below Exception
+            System.out.println("\nChoose a option between(0-3) from below\n1.Add a student details\n2.Remove a student details\n3.Display a student grade\n4.Display all students\n0.Exit\n\n ");
+            int option = Integer.parseInt(reader.nextLine()); //collecting the user option/choice
+            switch (option)
             {
-                throw new AgeNotWithinRangeException("AgeNotWithinRange");
-            }
-        }
-        catch (Exception ex) // To catch the exception and display its message
-        {
-            System.out.println(ex.getMessage());
-           return false; // setting flag to false, so that will not create any object
-        }
-        return true;
-    }
+                case 0: // for exiting from the interactive menu
+                {
+                    flag = false;
+                    break;
+                }
+                case 1: // To add a new student details
+                {
+                    System.out.println("Enter student name : ");
+                    String nameL = reader.nextLine();
+                    System.out.println("Enter student grade : ");
+                    int gradeL = Integer.parseInt(reader.nextLine());
+                    if (!obj.map.containsKey(nameL)) // checks if entered name is not available in map  ,then calling addStudent(nameL, gradeL)
+                        obj.addStudent(nameL, gradeL);
+                    else System.out.println("Can not be added again as it is available already\n");
+                }
+                break;
+                case 2: // To remove the entered student name elements from map, if the name is already present in map.
+                {
+                    System.out.println("Enter a student name to be removed");
+                    String nameL = reader.nextLine();
+                    if(obj.map.containsKey(nameL)) // checks if the name is already present in map
+                    {
+                        obj.removeStudent(nameL); // removes the respective element (including key and value)
+                        System.out.println("Removed successfully");
+                    }
+                    else System.out.println("Student name not found\n"); //displays this message if entered name is not found.
+                }
+                break;
+                case 3: // To collect Student name from user and displays grade(value) by name
+                {
+                    System.out.println("Enter a student name ");
+                    String nameL = reader.nextLine();
+                    if(obj.map.containsKey(nameL)) // to check whether name is available already
+                        obj.displayStudentGrade(nameL); // calling displayStudentGrade(nameL) to display grade by name
+                    else System.out.println("entered student name is not found\n");
+                }
+                break;
+                case 4:
+                {
+                    if (obj.map.isEmpty())  // to check if map is empty,else displays all student grades by name
+                        System.out.println("No data available\n");
+                    else obj.displayAllStudentGrades();
+                }
+                break;
 
-    private static boolean generateNameException(String name)
-    {
-        try // using try block as line 75 throws exception
-        {
-            for (int i = 0; i < name.length(); i++) //for iterating inside the string
-            {
-                char c = name.charAt(i); // to store character at each index
-
-                if (!((c >= 65 && c <= 90) || (c >= 'a' && c <= 'z') || (c == ' '))) //checks if any other characters found except 'a-z' , 'A-Z' & '0-9'
-                    throw new NameNotValidException("NameNotValidException");
 
             }
         }
-        catch (Exception e) // To catch the exception and display its message
-        {
-            System.out.println(e.getMessage());
-            return false; // setting flag to false, so that will not create any object
-        }
-        return true;
     }
 
+    private void addStudent(String name, int grade)
+    {
+        map.put(name,grade); // adding/putting a elemets into map using arguments name(Key),grade(value)
+        System.out.println("Added successfully!!");
+    }
+    private void removeStudent(String name) // removes a student element from map using key
+    {
+        map.remove(name);
+    }
+    private void displayStudentGrade(String name) // displays student name and grade
+    {
+        System.out.println("Name : " + name + "  Grade : " + map.get(name));
+        //map.get(name) - returns the value which is grade
+    }
 
+    private void displayAllStudentGrades() // To display all student details in the map
+    {
+        for(String name : map.keySet()) // using for each to iterate
+            System.out.println("Name : " + name + "  Grade : " + map.get(name));
+    }
 }
-
